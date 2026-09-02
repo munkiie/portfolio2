@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Book a Photoshoot | Realeboha Mokodutlo</title>
+  <meta name="description" content="Book a photoshoot with Tn.m_Photography. Send a booking request for portraits, graduations, events, family and product photography." />
+  <meta name="author" content="Realeboha Mokodutlo" />
+  <meta property="og:title" content="Book a Photoshoot | Realeboha Mokodutlo" />
+  <meta property="og:description" content="Book a photoshoot with Tn.m_Photography. Send a booking request for portraits, graduations, events, family and product photography." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <a class="skip" href="#main" style="position:absolute;left:-9999px">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav__inner">
+      <a class="brand" href="index.html">Realeboha <span>Mokodutlo</span></a>
+      <nav aria-label="Main navigation">
+        <ul class="nav__links" id="primary-nav">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="journey.html">My Journey</a></li>
+            <li><a href="photography.html">Photography</a></li>
+            <li><a href="family.html">Family</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="goals.html">Goals</a></li>
+            <li><a href="contact.html" class="is-active">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="nav__tools">
+        <a class="btn btn--gold btn--sm nav__cta" href="contact.html">Book Me</a>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch colour mode">&#9790;</button>
+        <button class="icon-btn nav__toggle" type="button" data-nav-toggle aria-controls="primary-nav" aria-expanded="false" aria-label="Open menu">&#9776;</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <section class="section">
+      <div class="wrap">
+        <p class="eyebrow">Contact &amp; Booking</p>
+        <h1>Let's Create Something Beautiful</h1>
+        <hr class="rule" />
+        <p class="lede">If you'd like to work with me, book a photoshoot, discuss an event, or simply ask about my photography services, I'd love to hear from you.</p>
+
+        <form class="form reveal" id="booking-form" novalidate style="margin-top:2.5rem">
+          <div class="field">
+            <label for="fullname">Full Name</label>
+            <input id="fullname" name="fullname" type="text" autocomplete="name" placeholder="Your full name" required />
+            <span class="error" aria-live="polite"></span>
+          </div>
+          <div class="field">
+            <label for="email">Email Address</label>
+            <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+            <span class="error" aria-live="polite"></span>
+          </div>
+          <div class="field">
+            <label for="phone">Phone Number</label>
+            <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="071 234 5678" required />
+            <span class="error" aria-live="polite"></span>
+          </div>
+          <div class="field">
+            <label for="shoottype">Type of Shoot</label>
+            <select id="shoottype" name="shoottype" required>
+              <option value="">Please choose...</option>
+              <option>Portrait</option>
+              <option>Graduation</option>
+              <option>Event</option>
+              <option>Family</option>
+              <option>Couple</option>
+              <option>Product</option>
+              <option>Food</option>
+              <option>Other</option>
+            </select>
+            <span class="error" aria-live="polite"></span>
+          </div>
+          <div class="field">
+            <label for="date">Preferred Date</label>
+            <input id="date" name="date" type="date" />
+            <span class="error" aria-live="polite"></span>
+          </div>
+          <div class="field">
+            <label for="location">Location</label>
+            <input id="location" name="location" type="text" placeholder="Where should we shoot?" />
+            <span class="error" aria-live="polite"></span>
+          </div>
+          <div class="field field--full">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="Tell me about the shoot you have in mind..." required></textarea>
+            <span class="error" aria-live="polite"></span>
+          </div>
+          <div class="field field--full">
+            <button class="btn btn--gold" type="submit">Send Booking Request</button>
+          </div>
+          <p class="form-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <p class="eyebrow">Connect With Me</p>
+        <h2>Find me online</h2>
+        <hr class="rule" />
+        <p class="lede">The links below are placeholders &mdash; replace them with your real profiles.</p>
+        <div class="btn-row">
+          <a class="btn btn--ghost" href="[ADD GITHUB LINK]">GitHub</a>
+          <a class="btn btn--ghost" href="[ADD INSTAGRAM LINK]">Instagram</a>
+          <a class="btn btn--ghost" href="[ADD FACEBOOK LINK]">Facebook</a>
+          <a class="btn btn--ghost" href="[ADD TIKTOK LINK]">TikTok</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer__grid">
+        <div>
+          <h4>Realeboha Mokodutlo</h4>
+          <p class="footer__tagline">Software Developer in the Making.<br />Photographer by Passion.</p>
+          <p style="opacity:.75;font-size:.9rem">Tn.m_Photography &middot; Welkom, Free State, South Africa</p>
+        </div>
+        <div>
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="journey.html">My Journey</a></li>
+            <li><a href="photography.html">Photography</a></li>
+            <li><a href="family.html">Family</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="goals.html">Goals</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <div class="socials">
+            <a href="[ADD GITHUB LINK]" aria-label="GitHub profile (link to be added)">GitHub</a>
+            <a href="[ADD INSTAGRAM LINK]" aria-label="Instagram profile (link to be added)">Instagram</a>
+            <a href="https://www.facebook.com/share/1DcvC1a4LM/?mibextid=wwXIfr" aria-label="Facebook profile (link to be added)">Facebook</a>
+            <a href="https://www.tiktok.com/@realeboha_mokodutlo?is_from_webapp=1&sender_device=pc" aria-label="TikTok profile (link to be added)">TikTok</a>
+          </div>
+          <p style="opacity:.75;font-size:.85rem;margin-top:1rem">Replace the placeholder links with your real profiles.</p>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>&copy; <span data-year>2026</span> Realeboha Mokodutlo. All rights reserved.</span>
+        <span>Tn.m_Photography &mdash; Capturing moments. Creating memories.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
