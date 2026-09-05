@@ -361,7 +361,7 @@ function softMusic() {
       '<span class="music-note">&#9834;</span>' +
       "<h3>Welcome, friend</h3>" +
       "<p>I never want you to feel bored here. Let a little soft music play while you walk through my life &mdash; " +
-      "slow, warm and light, the way heaven feels on a quiet morning. Turn it up, turn it down, or switch it off anytime.</p>" +
+      "Turn it up, turn it down, or switch it off anytime. ENJOY 😉</p>" +
       '<div class="music-panel is-open" style="width:100%;margin-bottom:1rem">' +
         "<strong>Volume</strong>" +
         '<input type="range" min="0" max="100" value="35" data-music-volume aria-label="Music volume" />' +
