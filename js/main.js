@@ -10,6 +10,7 @@
    6. Booking form validation with success message
    7. Scroll reveal animations & skill bars
    8. Friendly placeholders for photos not uploaded yet
+   9. Soft background music (welcome pop-up + floating bubble + volume)
    ===================================================== */
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -22,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
   bookingForm();
   scrollReveal();
   markActiveLink();
+  softMusic();
   document.querySelectorAll("[data-year]").forEach(function (el) {
     el.textContent = new Date().getFullYear();
   });
@@ -43,7 +45,7 @@ function welcomeAndClock() {
       hour12: false,
     });
     box.innerHTML =
-      part + ", welcome to my little space &middot; <strong>" + time + "</strong>";
+      part + ", welcome to my portfolio &middot; <strong>" + time + "</strong>";
   }
   paint();
   setInterval(paint, 1000);
@@ -330,4 +332,258 @@ function markActiveLink() {
   document.querySelectorAll(".nav__links a").forEach(function (a) {
     if (a.getAttribute("href") === here) a.classList.add("is-active");
   });
+}
+
+
+/* 10. Soft background music ------------------------------------- */
+/* The music is generated live in the browser with the Web Audio API,
+   so there is no audio file to download and it never repeats exactly.
+   It is a gentle lo-fi "vlog" beat: warm chords, a soft bass line,
+   a light kick and hat. The welcome pop-up shows only on the home
+   page (first visit); after that a bubble on every page controls it,
+   and if music was on, it starts again automatically on each page. */
+function softMusic() {
+  var POP_KEY = "rm-music-greeted";
+  var ON_KEY = "rm-music-on";
+  var VOL_KEY = "rm-music-vol";
+  var page = location.pathname.split("/").pop() || "index.html";
+  var isHome = page === "index.html";
+
+  function remember(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function recall(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+  /* ---- build the pop-up (home page only) ---- */
+  var pop = document.createElement("div");
+  pop.className = "music-pop";
+  pop.setAttribute("aria-hidden", "true");
+  pop.innerHTML =
+    '<div class="music-pop__card" role="dialog" aria-modal="true" aria-label="Soft music welcome">' +
+      '<span class="music-note">&#9834;</span>' +
+      "<h3>Welcome, friend</h3>" +
+      "<p>I never want you to feel bored here. Let a little soft music play while you walk through my life &mdash; " +
+      "slow, warm and light, the way heaven feels on a quiet morning. Turn it up, turn it down, or switch it off anytime.</p>" +
+      '<div class="music-panel is-open" style="width:100%;margin-bottom:1rem">' +
+        "<strong>Volume</strong>" +
+        '<input type="range" min="0" max="100" value="35" data-music-volume aria-label="Music volume" />' +
+      "</div>" +
+      '<div class="btn-row" style="justify-content:center">' +
+        '<button class="btn btn--gold" type="button" data-music-yes>Play soft music</button>' +
+        '<button class="btn btn--ghost" type="button" data-music-no>Continue in silence</button>' +
+      "</div>" +
+    "</div>";
+
+  /* ---- build the bubble ---- */
+  var bubble = document.createElement("div");
+  bubble.className = "music-bubble";
+  bubble.innerHTML =
+    '<div class="music-panel" data-music-panel>' +
+      "<strong>Soft music</strong>" +
+      '<input type="range" min="0" max="100" value="35" data-music-volume aria-label="Music volume" />' +
+      '<div class="music-row">' +
+        '<button class="btn btn--gold" type="button" data-music-toggle>Play</button>' +
+      "</div>" +
+    "</div>" +
+    '<button class="music-bubble__btn" type="button" data-music-bubble aria-label="Music controls" aria-expanded="false">&#9834;</button>';
+
+  document.body.appendChild(pop);
+  document.body.appendChild(bubble);
+
+  var bubbleBtn = bubble.querySelector("[data-music-bubble]");
+  var panel = bubble.querySelector("[data-music-panel]");
+  var toggleBtn = bubble.querySelector("[data-music-toggle]");
+  var sliders = document.querySelectorAll("[data-music-volume]");
+
+  /* ---- the audio engine: a gentle lo-fi "vlog" beat ----
+     Warm jazzy chords, a soft walking bass, a light kick and hat,
+     and a few plucked melody notes. About 84 BPM, 4 bars per loop. */
+  var ctx = null, master = null, timer = null, playing = false;
+  var volume = parseInt(recall(VOL_KEY) || "35", 10) / 100;
+
+  /* Cmaj7 - Am7 - Fmaj7 - G7 (frequencies of each chord tone) */
+  var CHORDS = [
+    [261.63, 329.63, 392.0, 493.88],
+    [220.0, 261.63, 329.63, 392.0],
+    [174.61, 220.0, 261.63, 329.63],
+    [196.0, 246.94, 293.66, 349.23],
+  ];
+  var MELODY = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5];
+  var BAR = 60 / 84 * 4; /* seconds per bar */
+  var bar = 0;
+
+  function tone(freq, when, length, gain, type) {
+    var osc = ctx.createOscillator();
+    var env = ctx.createGain();
+    osc.type = type || "sine";
+    osc.frequency.value = freq;
+    env.gain.setValueAtTime(0, when);
+    env.gain.linearRampToValueAtTime(gain, when + 0.02);
+    env.gain.exponentialRampToValueAtTime(0.0001, when + length);
+    osc.connect(env);
+    env.connect(master);
+    osc.start(when);
+    osc.stop(when + length + 0.1);
+  }
+
+  function kick(when) {
+    var osc = ctx.createOscillator();
+    var env = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(120, when);
+    osc.frequency.exponentialRampToValueAtTime(45, when + 0.12);
+    env.gain.setValueAtTime(0.35, when);
+    env.gain.exponentialRampToValueAtTime(0.0001, when + 0.25);
+    osc.connect(env);
+    env.connect(master);
+    osc.start(when);
+    osc.stop(when + 0.3);
+  }
+
+  function hat(when) {
+    var len = 0.05;
+    var buffer = ctx.createBuffer(1, ctx.sampleRate * len, ctx.sampleRate);
+    var data = buffer.getChannelData(0);
+    for (var i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+    var src = ctx.createBufferSource();
+    src.buffer = buffer;
+    var filter = ctx.createBiquadFilter();
+    filter.type = "highpass";
+    filter.frequency.value = 7000;
+    var env = ctx.createGain();
+    env.gain.value = 0.08;
+    src.connect(filter);
+    filter.connect(env);
+    env.connect(master);
+    src.start(when);
+  }
+
+  function loop() {
+    if (ctx.state !== "running") return;
+    var t = ctx.currentTime + 0.1;
+    var chord = CHORDS[bar % 4];
+    /* warm chord, slightly broken like lo-fi keys */
+    for (var c = 0; c < chord.length; c++) {
+      tone(chord[c], t + c * 0.06, BAR * 0.9, 0.05, "triangle");
+    }
+    /* soft bass on beat 1 and the "and" of 3 */
+    tone(chord[0] / 2, t, 0.5, 0.12);
+    tone(chord[0] / 2, t + BAR * 0.625, 0.4, 0.09);
+    /* laid-back beat: kick on 1 and 3, hat on every off-beat */
+    kick(t);
+    kick(t + BAR * 0.5);
+    for (var h = 0; h < 4; h++) hat(t + BAR * (h / 4 + 0.125));
+    /* sparse plucked melody on top */
+    if (Math.random() < 0.8) {
+      var n = 1 + Math.floor(Math.random() * 2);
+      for (var m = 0; m < n; m++) {
+        var pick = MELODY[Math.floor(Math.random() * MELODY.length)];
+        tone(pick, t + BAR * (0.25 + Math.random() * 0.6), 0.6, 0.05);
+      }
+    }
+    bar++;
+  }
+
+  function start() {
+    if (playing) return;
+    try {
+      if (!ctx) {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        ctx = new AC();
+        master = ctx.createGain();
+        master.gain.value = volume;
+        master.connect(ctx.destination);
+      }
+      if (ctx.state === "suspended") ctx.resume();
+      playing = true;
+      loop();
+      timer = setInterval(loop, BAR * 1000);
+      paint();
+      remember(ON_KEY, "yes");
+    } catch (e) {}
+  }
+
+  function stop() {
+    playing = false;
+    if (timer) clearInterval(timer);
+    timer = null;
+    if (ctx) { try { ctx.suspend(); } catch (e) {} }
+    paint();
+    remember(ON_KEY, "no");
+  }
+
+  function paint() {
+    toggleBtn.textContent = playing ? "Pause" : "Play";
+    bubbleBtn.classList.toggle("is-playing", playing);
+    bubbleBtn.innerHTML = playing ? "&#9835;" : "&#9834;";
+    bubbleBtn.setAttribute("aria-label", playing ? "Music playing - open controls" : "Music off - open controls");
+  }
+
+  function setVolume(v) {
+    volume = v;
+    if (master) master.gain.value = v;
+    remember(VOL_KEY, Math.round(v * 100));
+    sliders.forEach(function (s) { s.value = Math.round(v * 100); });
+  }
+
+  sliders.forEach(function (s) {
+    s.value = Math.round(volume * 100);
+    s.addEventListener("input", function () { setVolume(this.value / 100); });
+  });
+
+  toggleBtn.addEventListener("click", function () { playing ? stop() : start(); });
+
+  bubbleBtn.addEventListener("click", function () {
+    var open = panel.classList.toggle("is-open");
+    bubbleBtn.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+
+  document.addEventListener("click", function (e) {
+    if (!bubble.contains(e.target)) {
+      panel.classList.remove("is-open");
+      bubbleBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  function closePop() {
+    pop.classList.remove("is-open");
+    pop.setAttribute("aria-hidden", "true");
+    remember(POP_KEY, "yes");
+  }
+
+  pop.querySelector("[data-music-yes]").addEventListener("click", function () { closePop(); start(); });
+  pop.querySelector("[data-music-no]").addEventListener("click", closePop);
+  pop.addEventListener("click", function (e) { if (e.target === pop) closePop(); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && pop.classList.contains("is-open")) closePop();
+  });
+
+  paint();
+
+if (isHome) {
+  /* welcome pop-up: show once per browser tab session */
+  var greetedThisSession = sessionStorage.getItem(POP_KEY);
+
+  if (!greetedThisSession) {
+    setTimeout(function () {
+      pop.classList.add("is-open");
+      pop.setAttribute("aria-hidden", "false");
+      sessionStorage.setItem(POP_KEY, "yes");
+    }, 200);
+  }
+}
+
+  if (recall(ON_KEY) === "yes" && (isHome ? recall(POP_KEY) : true)) {
+    /* Music was on: try to start right away (allowed once the visitor has
+       interacted with the site before), and fall back to the first tap/key
+       on this page if the browser still asks for a gesture. */
+    start();
+    var once = function () {
+      document.removeEventListener("click", once);
+      document.removeEventListener("keydown", once);
+      if (ctx && ctx.state === "suspended") ctx.resume();
+      start();
+    };
+    document.addEventListener("click", once);
+    document.addEventListener("keydown", once);
+  }
 }
