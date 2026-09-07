@@ -183,7 +183,7 @@ p { margin: 0 0 1.1em; }
 .btn--ghost { background: transparent; color: var(--text); border-color: var(--line); }
 .btn--ghost:hover { border-color: var(--gold); }
 .btn--gold { background: var(--gold); border-color: var(--gold); color: #fff; }
-.btn--sm { padding: 0.55rem 1.1rem; font-size: 0.7rem; }
+.btn--sm { padding: 0.55rem 1.1rem; font-size: 0.6rem; }
 
 .btn-row { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.8rem; }
 
@@ -284,6 +284,7 @@ p { margin: 0 0 1.1em; }
 /* ---------- Cards & grids ---------- */
 .grid { display: grid; gap: 1.4rem; }
 .grid--2 { grid-template-columns: repeat(2, 1fr); }
+.grid grid--2 reveal {grid-template-columns: repeat(1, 1fr);}
 .grid--3 { grid-template-columns: repeat(3, 1fr); }
 .grid--4 { grid-template-columns: repeat(4, 1fr); }
 
@@ -631,6 +632,144 @@ body.dark .footer { background: #0e0d0a; }
   .form { grid-template-columns: 1fr; }
   .footer__grid { grid-template-columns: 1fr; }
   .quote { font-size: 1.3rem; padding-left: 1rem; }
+}
+
+
+
+/* ============ Soft music player: welcome popup + floating bubble ============ */
+.music-pop {
+  position: fixed; inset: 0; z-index: 120;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(12,12,12,.55); backdrop-filter: blur(4px);
+  padding: 1.25rem;
+}
+.music-pop.is-open { display: flex; }
+.music-pop__card {
+  background: var(--paper); border: 1px solid var(--line);
+  border-radius: 18px; max-width: 430px; width: 100%;
+  padding: 2rem 1.75rem; text-align: center;
+  box-shadow: 0 30px 70px rgba(0,0,0,.35);
+  animation: musicRise .5s ease both;
+}
+@keyframes musicRise { from { opacity: 0; transform: translateY(18px) scale(.97); } }
+.music-pop__card h3 { font-size: 1.5rem; margin: 0 0 .5rem; }
+.music-pop__card p { opacity: .85; margin: 0 0 1.25rem; }
+.music-note { font-size: 1.9rem; color: var(--gold); display: block; margin-bottom: .4rem; }
+
+.music-bubble {
+  position: fixed; right: 18px; bottom: 18px; z-index: 110;
+  display: flex; flex-direction: column; align-items: flex-end; gap: .6rem;
+}
+.music-bubble__btn {
+  width: 56px; height: 56px; border-radius: 50%; border: 1px solid var(--line);
+  background: var(--gold); color: #1a1508; font-size: 1.35rem; cursor: pointer;
+  box-shadow: 0 12px 28px rgba(0,0,0,.28);
+  display: grid; place-items: center; transition: transform .2s ease;
+}
+.music-bubble__btn:hover { transform: scale(1.07); }
+.music-bubble__btn.is-playing { animation: musicPulse 2.4s ease-in-out infinite; }
+@keyframes musicPulse { 50% { box-shadow: 0 12px 28px rgba(0,0,0,.28), 0 0 0 12px rgba(197,160,90,.15); } }
+.music-panel {
+  background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
+  padding: .85rem 1rem; width: 220px; box-shadow: 0 16px 40px rgba(0,0,0,.22);
+  display: none;
+}
+.music-panel.is-open { display: block; }
+.music-panel strong { display: block; font-size: .85rem; letter-spacing: .08em; text-transform: uppercase; margin-bottom: .6rem; }
+.music-panel input[type="range"] { width: 100%; accent-color: var(--gold); }
+.music-panel .music-row { display: flex; gap: .5rem; margin-top: .75rem; }
+.music-panel .music-row .btn { flex: 1; padding: .5rem .6rem; font-size: .78rem; }
+
+
+
+
+/* ---------- Read more / collapsible sections ---------- */
+.read-more-block {
+  overflow: hidden;
+  transition: max-height 0.45s ease, opacity 0.35s ease;
+  max-height: 0;
+  opacity: 0;
+}
+.read-more-block.is-open {
+  opacity: 1;
+}
+.read-more-btn {
+  margin-top: 0.6rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: inherit;
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0 0 2px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.read-more-btn::after {
+  content: "↓";
+  transition: transform 0.2s;
+}
+.read-more-btn.is-open::after {
+  transform: rotate(180deg);
+}
+
+/* ---------- Accordion / dropdown cards ---------- */
+.accordion {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  overflow: hidden;
+}
+.accordion__head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.3rem;
+  background: transparent;
+  border: 0;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+.accordion__head:hover { background: var(--paper-2); }
+.accordion__head h3 { margin: 0; font-size: 1.1rem; }
+.accordion__icon {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid var(--line);
+  display: grid; place-items: center;
+  color: var(--gold);
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+.accordion.is-open .accordion__icon { transform: rotate(180deg); }
+.accordion__body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+.accordion.is-open .accordion__body {
+  max-height: 400px;
+  opacity: 1;
+}
+.accordion__body > div { padding: 0 1.3rem 1.3rem; }
+
+/* About portrait sizing */
+.about-photo {
+  max-width: 260px;
+  margin-inline: auto;
+}
+.about-photo img {
+  object-fit: cover;
+  object-position: center top;
 }
 
 
